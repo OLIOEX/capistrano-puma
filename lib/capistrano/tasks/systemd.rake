@@ -120,6 +120,8 @@ namespace :puma do
       service_ok = true
       begin
         Timeout.timeout(30) {
+          puts "Waiting 40..."
+          sleep 40
           service_ok = if fetch(:puma_systemctl_user) == :system
                         execute("#{fetch(:puma_systemctl_bin)} status #{fetch(:puma_service_unit_name)} > /dev/null", raise_on_non_zero_exit: false)
                       else
@@ -128,6 +130,7 @@ namespace :puma do
           cmd = 'reload'
         }
       rescue Timeout::Error
+        puts "Reload timed out"
         service_ok = false
       end
       unless service_ok

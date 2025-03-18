@@ -89,10 +89,15 @@ namespace :puma do
   desc 'Restarts or reloads Puma service via systemd'
   task :smart_restart do
     if fetch(:puma_phased_restart)
-      invoke 'puma:reload'
+      Timeout::timeout(5) {
+        sleep 10
+        invoke 'puma:reload'
+      }
     else
       invoke 'puma:restart'
     end
+  rescue Timeout::Error
+    invoke 'puma:restart'
   end
 
   desc 'Restart Puma service via systemd'
